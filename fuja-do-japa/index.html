@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html style="touch-action:none">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Fuja do Japa</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;position:fixed;touch-action:none;background:#0f0f1a;font-family:Arial,sans-serif;-webkit-user-select:none;user-select:none}
+#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(ellipse at center,#1a1a2e,#16213e,#0f0f1a)}
+#grid{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;opacity:0.04;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5)1px,transparent 1px);background-size:60px 60px}
+#japa{position:fixed;z-index:2;pointer-events:none;width:60px;height:80px;will-change:transform}
+#japa-body{position:absolute;bottom:0;left:5px;width:50px;height:50px;background:#f0ece4;border-radius:4px}
+#japa-belt{position:absolute;bottom:18px;left:5px;width:50px;height:5px;background:#111}
+#japa-head{position:absolute;top:0;left:8px;width:44px;height:35px;background:#f0c8a0;border-radius:50%}
+#japa-hair{position:absolute;top:-2px;left:4px;width:52px;height:20px;background:#111;border-radius:50% 50% 0 0}
+#japa-band{position:absolute;top:14px;left:5px;width:50px;height:5px;background:#e94560}
+#japa-eye-l,#japa-eye-r{position:absolute;width:10px;height:4px;background:#111;top:23px}
+#japa-eye-l{left:12px}#japa-eye-r{right:12px}
+#japa-brow-l,#japa-brow-r{position:absolute;width:12px;height:2px;background:#111;top:19px;transform-origin:center}
+#japa-brow-l{left:10px}#japa-brow-r{right:10px}
+#japa-mouth{position:absolute;width:12px;height:6px;border:2px solid #111;border-top:none;border-radius:0 0 12px 12px;top:30px;left:16px}
+#japa-arm-l,#japa-arm-r{position:absolute;width:8px;height:22px;background:#f0c8a0;border-radius:4px;top:48px;transform-origin:top center}
+#japa-arm-l{left:-2px;animation:armL 0.2s ease-in-out infinite alternate}
+#japa-arm-r{right:-2px;animation:armR 0.2s ease-in-out infinite alternate}
+@keyframes armL{from{transform:rotate(-20deg)}to{transform:rotate(10deg)}}
+@keyframes armR{from{transform:rotate(20deg)}to{transform:rotate(-10deg)}}
+#japa-leg-l,#japa-leg-r{position:absolute;width:14px;height:22px;background:#333;border-radius:3px;bottom:-8px;transform-origin:top center}
+#japa-leg-l{left:10px;animation:legL 0.15s ease-in-out infinite alternate}
+#japa-leg-r{right:10px;animation:legR 0.15s ease-in-out infinite alternate}
+@keyframes legL{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+@keyframes legR{from{transform:rotate(8deg)}to{transform:rotate(-8deg)}}
+
+#target{position:fixed;z-index:3;pointer-events:none;will-change:transform;width:50px;height:50px}
+#target-dot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;background:#00c8ff;border-radius:50%;box-shadow:0 0 25px rgba(0,200,255,0.6)}
+#target-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;border:3px solid rgba(0,200,255,0.4);border-radius:50%;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
+
+#ui{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none;display:flex;align-items:center;justify-content:center;padding:20px}
+#start-screen,#go-screen{pointer-events:auto;text-align:center;background:rgba(0,0,0,0.88);padding:2.5rem 2rem;border-radius:24px;border:2px solid #e94560;max-width:400px;width:100%}
+#start-screen h1,#go-screen h1{font-size:2.5rem;color:#e94560;margin-bottom:0.5rem}
+#start-screen p,#go-screen p{color:#ccc;font-size:1rem;margin-bottom:0.3rem}
+#go-screen .fs{font-size:2rem;color:#ffd700;margin:1rem 0}
+.btn{margin-top:1.5rem;padding:1rem 2.5rem;font-size:1.2rem;font-weight:bold;border:none;border-radius:50px;background:#e94560;color:white;pointer-events:auto;text-transform:uppercase;letter-spacing:2px;-webkit-tap-highlight-color:transparent;z-index:20}
+.hidden{display:none!important}
+#hud{position:fixed;top:15px;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;color:white;font-size:1rem;font-weight:bold;display:flex;gap:1.5rem;background:rgba(0,0,0,0.5);padding:0.5rem 1.2rem;border-radius:30px;white-space:nowrap}
+#hud span{color:#ffd700}
+#cr{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.15);font-size:0.7rem;z-index:1;pointer-events:none}
+#cd{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:4;color:rgba(0,200,255,0.6);font-size:1.2rem;font-weight:bold;pointer-events:none;display:none}
+</style>
+</head>
+<body>
+<div id="bg"></div><div id="grid"></div>
+
+<div id="japa">
+  <div id="japa-hair"></div>
+  <div id="japa-head">
+    <div id="japa-band"></div>
+    <div id="japa-brow-l"></div><div id="japa-brow-r"></div>
+    <div id="japa-eye-l"></div><div id="japa-eye-r"></div>
+    <div id="japa-mouth"></div>
+  </div>
+  <div id="japa-arm-l"></div><div id="japa-arm-r"></div>
+  <div id="japa-body"><div id="japa-belt"></div></div>
+  <div id="japa-leg-l"></div><div id="japa-leg-r"></div>
+</div>
+
+<div id="target"><div id="target-dot"></div><div id="target-ring"></div></div>
+<div id="cd">🔥 PREPARE-SE</div>
+
+<div id="ui">
+  <div id="start-screen">
+    <h1>🥋 FUJA DO JAPA</h1>
+    <p>Arraste o ponto azul para fugir do japa!</p>
+    <p style="font-size:.85rem;color:#aaa;margin-top:.8rem">A cada 5s ele acelera</p>
+    <button class="btn" onclick="start()">▶ JOGAR</button>
+  </div>
+  <div id="go-screen" class="hidden">
+    <h1 id="gt">💀 PEGOU!</h1>
+    <p id="gs">O japa te alcançou</p>
+    <div class="fs" id="fs">0s</div>
+    <button class="btn" onclick="start()">🔄 TENTAR</button>
+  </div>
+</div>
+
+<div id="hud" class="hidden">
+  <div>⏱ <span id="tm">0s</span></div>
+  <div>⚡ <span id="sl">1</span>x</div>
+</div>
+<div id="cr">Jeferson Araujo 🤝 Manu</div>
+
+<script>
+// DOM refs
+const japaEl = document.getElementById('japa');
+const targetEl = document.getElementById('target');
+const cdEl = document.getElementById('cd');
+
+// Dimensions
+let W, H;
+function size() { W = innerWidth; H = innerHeight; }
+onresize = size; size();
+
+// Target position
+let tx = W/2, ty = H/2;
+const R = 20;
+
+// Japa position
+let jx, jy;
+const BS = 3.2;
+
+// Game state
+let playing = false, dragging = false, chasing = false;
+let startTime, elapsed, speedLvl, dragStartX, dragStartY, tStartX, tStartY;
+
+// Move target
+function mv(x, y) {
+  tx = Math.max(R, Math.min(W - R, x));
+  ty = Math.max(R, Math.min(H - R, y));
+  targetEl.style.transform = `translate(${tx}px,${ty}px)`;
+}
+mv(W/2, H/2);
+
+function mvJapa(x, y) {
+  jx = x; jy = y;
+  japaEl.style.transform = `translate(${x}px,${y}px)`;
+}
+
+// --- INPUT: pure touch events (lowest latency on Android) ---
+document.addEventListener('touchstart', (e) => {
+  if (!playing) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  dragStartX = t.clientX; dragStartY = t.clientY;
+  tStartX = tx; tStartY = ty;
+  dragging = true;
+}, { passive: false });
+
+document.addEventListener('touchmove', (e) => {
+  if (!playing || !dragging) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  mv(tStartX + (t.clientX - dragStartX), tStartY + (t.clientY - dragStartY));
+}, { passive: false });
+
+document.addEventListener('touchend', (e) => { if (!playing) return; e.preventDefault(); dragging = false; }, { passive: false });
+document.addEventListener('touchcancel', (e) => { if (!playing) return; dragging = false; });
+
+// Mouse fallback
+document.addEventListener('mousedown', (e) => {
+  if (!playing) return;
+  dragStartX = e.clientX; dragStartY = e.clientY;
+  tStartX = tx; tStartY = ty;
+  dragging = true;
+});
+document.addEventListener('mousemove', (e) => {
+  if (!playing || !dragging) return;
+  mv(tStartX + (e.clientX - dragStartX), tStartY + (e.clientY - dragStartY));
+});
+document.addEventListener('mouseup', () => { dragging = false; });
+document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+// --- GAME LOOP: simple interval, no rAF ---
+let loopId;
+
+function start() {
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('go-screen').classList.add('hidden');
+  document.getElementById('hud').classList.remove('hidden');
+  cdEl.style.display = 'block';
+  cdEl.textContent = '🔥 PREPARE-SE';
+
+  mv(W/2, H/2);
+  const sx = Math.random() < 0.5 ? -100 : W + 100;
+  const sy = H * 0.2 + Math.random() * H * 0.6;
+  mvJapa(sx, sy);
+
+  playing = true; chasing = false; speedLvl = 1;
+  startTime = Date.now();
+  document.getElementById('tm').textContent = '0s';
+  document.getElementById('sl').textContent = '1';
+
+  if (loopId) clearInterval(loopId);
+  loopId = setInterval(gameTick, 20); // ~50fps loop, decoupled from rAF
+}
+
+function over(reason) {
+  playing = false;
+  if (loopId) clearInterval(loopId);
+  document.getElementById('hud').classList.add('hidden');
+  cdEl.style.display = 'none';
+  document.getElementById('gt').textContent = reason === 'SAIU' ? '🚫 SAIU!' : '💀 PEGOU!';
+  document.getElementById('gs').textContent = reason === 'SAIU' ? 'Alvo escapou...' : 'Japa alcançou...';
+  document.getElementById('fs').textContent = (elapsed/1000).toFixed(2)+'s';
+  document.getElementById('go-screen').classList.remove('hidden');
+}
+
+function gameTick() {
+  if (!playing) return;
+
+  const now = Date.now();
+  elapsed = now - startTime;
+
+  document.getElementById('tm').textContent = (elapsed/1000).toFixed(2)+'s';
+
+  const lv = Math.floor(elapsed / 5000) + 1;
+  if (lv !== speedLvl) { speedLvl = lv; document.getElementById('sl').textContent = lv; }
+  const speed = BS + (speedLvl - 1) * 0.55;
+
+  if (!chasing && elapsed >= 1800) { chasing = true; cdEl.style.display = 'none'; }
+
+  if (!chasing) {
+    const dx = W/2 - jx, dy = H/2 - jy, d = Math.sqrt(dx*dx + dy*dy);
+    if (d > 2) {
+      jx += (dx/d) * Math.max(1.5, d*0.04);
+      jy += (dy/d) * Math.max(1.5, d*0.04);
+      japaEl.style.transform = `translate(${jx}px,${jy}px)`;
+    }
+    cdEl.textContent = `🔥 ${Math.ceil((1800-elapsed)/1000)}`;
+  }
+
+  if (chasing) {
+    const dx = tx - jx, dy = ty - jy, d = Math.sqrt(dx*dx + dy*dy);
+
+    if (d < 28) { over('PEGOU'); return; }
+
+    if (d > 5) {
+      jx += (dx/d) * speed;
+      jy += (dy/d) * speed;
+      const sx = dx > 0 ? 1 : -1;
+      japaEl.style.transform = `translate(${jx}px,${jy}px) scaleX(${sx})`;
+    }
+  }
+}
+</script>
+</body>
+</html>
